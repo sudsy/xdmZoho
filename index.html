@@ -1,0 +1,51 @@
+<HTML>
+<HEAD>
+
+
+</HEAD>
+<BODY>
+This is a simple Echo Test
+<TEXTAREA id="echoText"></TEXTAREA>	
+<BUTTON id="echoButton">Echo</BUTTON>
+
+</BODY>
+
+<SCRIPT>
+
+	var echoButton = document.getElementById("echoButton");
+	echoButton.addEventListener("click", onButtonClick);
+
+	function onButtonClick(){
+		// alert("onClick");
+
+		var urlString = "https://creator.zoho.com/29518110/talent-dev/view-perma/EchoTest/e4seA37uMzMD5kaBuBCEZ6wzN4a5VhpVApnEZZZYBe3YzpbA8zbfbwG72FCK6ku15qwSHVOPQqgKRr6d2X618A9txhpHjEf9nKsY/";
+		var callbackURL = "https://dl.dropboxusercontent.com/u/119970226/xdmEcho/callback.html?callbackJSON="
+		callIFrame(urlString, callbackURL, {echoString : "Hello World"});
+	}
+
+	function onFrameCallback(callbackJSON){
+
+		alert(callbackJSON);
+	}
+
+	window.onFrameCallback = onFrameCallback;
+	
+	function callIFrame(url, callbackURL, queryParamsMap){
+		
+		var ifra = document.createElement('iframe');
+		var queryString = "_cburl=" + encodeURIComponent(callbackURL) + "&";
+		
+		for (var paramName in queryParamsMap)
+		{
+		  queryString += "&" + encodeURIComponent(paramName) + "=" + encodeURIComponent(queryParamsMap[paramName]);
+		  
+		}
+		ifra.src=url + "?" + queryString;
+		ifra.setAttribute("height","0");
+		ifra.setAttribute("width","0");
+		ifra.setAttribute("hidden", true);
+		ifra.setAttribute("tabindex", -1);
+		void(document.body.appendChild(ifra));
+	}
+</SCRIPT>
+</HTML>

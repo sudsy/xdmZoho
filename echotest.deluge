@@ -1,0 +1,7 @@
+htmlpage EchoTest(_cburl, echoString)
+<%{
+    strJSON = "{\"echoString\": \"" + input.echoString + "\"}";
+    encodedResponse = encodeUrl(strJSON);
+    callbackURL = _cburl + encodedResponse;%>    
+  <iframe src="<%=callbackURL%>" width="0" height="0" tabindex="-1" title="empty" hidden>
+<%}%>
