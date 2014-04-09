@@ -18,20 +18,30 @@ This is a simple Echo Test
 	function onButtonClick(){
 		// alert("onClick");
 
-		var urlString = "https://creator.zoho.com/29518110/talent-dev/view-perma/EchoTest/e4seA37uMzMD5kaBuBCEZ6wzN4a5VhpVApnEZZZYBe3YzpbA8zbfbwG72FCK6ku15qwSHVOPQqgKRr6d2X618A9txhpHjEf9nKsY/";
+		var urlString = "https://creator.zoho.com/29518110/talent-dev/view-perma/EchoTest";
 		var callbackURL = "https://dl.dropboxusercontent.com/u/119970226/xdmEcho/callback.html?callbackJSON="
-		callIFrame(urlString, callbackURL, {echoString : "Hello World"});
+		xdmAJAX(urlString, callbackURL, {echoString : "Hello World"}, onFrameCallback, 5000, onFrameTimeout);
+	}
+
+	function onFrameTimeout(){
+		alert("Something went wrong");
 	}
 
 	function onFrameCallback(callbackJSON){
-
 		alert(callbackJSON);
 	}
 
-	window.onFrameCallback = onFrameCallback;
-	
-	function callIFrame(url, callbackURL, queryParamsMap){
+	function xdmAJAX(url, callbackURL, queryParamsMap, onSuccessCallback, timeout, timeoutCallback){
+
+		//Set a cancellable timeout
+		var timeoutID = setTimeout(timeoutCallback, timeout);
 		
+		//This needs to be wrapped to clear the timeout
+		window.onFrameCallback = function(){
+			clearTimeout(timeoutID);
+			onSuccessCallback.apply(this, arguments);
+		};
+			
 		var ifra = document.createElement('iframe');
 		var queryString = "_cburl=" + encodeURIComponent(callbackURL) + "&";
 		
@@ -46,6 +56,11 @@ This is a simple Echo Test
 		ifra.setAttribute("hidden", true);
 		ifra.setAttribute("tabindex", -1);
 		void(document.body.appendChild(ifra));
+
+
+		
 	}
+
+	
 </SCRIPT>
 </HTML>
