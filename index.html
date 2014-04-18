@@ -4,9 +4,10 @@
 
 </HEAD>
 <BODY>
-This is a simple Echo Test
-<TEXTAREA id="echoText"></TEXTAREA>	
-<BUTTON id="echoButton">Echo</BUTTON>
+This is a simple Echo Test<br/>
+This is sending the text from the text area to zoho creator and then being returned again<br/>
+<TEXTAREA id="echoText">Hello</TEXTAREA><br/>	
+<BUTTON id="echoButton">Echo</BUTTON><br/>
 
 </BODY>
 
@@ -18,7 +19,9 @@ This is a simple Echo Test
 	function onButtonClick(){
 		// alert("onClick");
 
-		var url = "https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=Hello";
+		var textArea = document.getElementById("echoText");
+		var encodedText = encodeURIComponent(textArea);
+		var url = "https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=" + encodedText;
 		var options = {
 			callbackURL : "http://htmlpreview.github.io/?https://github.com/sudsy/xdmZoho/blob/master/callback.html"
 		}
