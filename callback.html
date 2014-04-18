@@ -6,5 +6,9 @@ function getParameterByName(name) {
 }
 
 
-window.parent.parent.onFrameCallback(getParameterByName("callbackJSON"));
+callbackFnName = getParameterByName("callbackFnName");
+response = getParameterByName("response");
+
+window.parent.parent[callbackFnName](response);
+
 </script>

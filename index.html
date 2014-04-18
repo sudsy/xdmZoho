@@ -18,39 +18,77 @@ This is a simple Echo Test
 	function onButtonClick(){
 		// alert("onClick");
 
-		var urlString = "https://creator.zoho.com/29518110/talent-dev/view-perma/EchoTest";
-		var callbackURL = "https://dl.dropboxusercontent.com/u/119970226/xdmEcho/callback.html?callbackJSON="
-		xdmAJAX(urlString, callbackURL, {echoString : "Hello World"}, onFrameCallback, 5000, onFrameTimeout);
+		var url = "https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=Hello";
+		get(url, onXdmResponse, onXdmTimeout);
 	}
 
-	function onFrameTimeout(){
+	function onXdmTimeout(){
 		alert("Something went wrong");
 	}
 
-	function onFrameCallback(callbackJSON){
-		alert(callbackJSON);
+	function onXdmResponse(response){
+		alert(response);
 	}
+	
 
-	function xdmAJAX(url, callbackURL, queryParamsMap, onSuccessCallback, timeout, timeoutCallback){
+	/**
+	 * This is a hack for making cross domain ajax requests to zoho creator. It uses iframes and code in the zoho creator application to acheiva a similar result to CORS
+	 * @param  {String} url
+	 * @param  {Function} successCallback
+	 * @param  {Function} timeoutCallback
+	 * @param  {String} options.callbackURL is the url containing the callback html. Defaults to /callback.html on the same host it is served from
+	 * @param  {Integer} options.timeout Defaults to 5000, the amount of time to wait for the callback before firing on("error")
+	 * @return {void}
+	 */
+	function get(url, successCallback, timeoutCallback, options){
+		options = options || {};
 
-		//Set a cancellable timeout
-		var timeoutID = setTimeout(timeoutCallback, timeout);
+		var windowCallbackName = "onFrameCallback";
 		
-		//This needs to be wrapped to clear the timeout
-		window.onFrameCallback = function(){
+		var callbackTimeout = options.timeout || 5000;
+		//Set a cancellable timeout
+		var emitter = new EventEmitter();
+		var timeoutID = setTimeout(function(){
+			// Remove the function from the global scope
+			delete window[windowCallbackName];
+			timeoutCallback();
+		}, callbackTimeout);
+		
+		//FInd a suitable name for the successCallback in the global scope
+		var tempCallbackName = windowCallbackName;
+		for (var i = 0; i < 50; i++) { 
+			if(window[tempCallbackName]){
+				tempCallbackName = windowCallbackName + "$" + i;
+			}else{
+				break;
+			}
+		};
+		windowCallbackName = tempCallbackName;
+
+
+		var origin = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+
+		var callbackURL = options.callbackURL || origin + "/callback.html"
+		callbackURL += "?callbackFnName=" + windowCallbackName + "&response="
+		
+		// Function needs to be attached to global scope to get called by the iframe
+		window[windowCallbackName] = function(){
+			//Cancel the timeout
 			clearTimeout(timeoutID);
-			onSuccessCallback.apply(this, arguments);
+			successCallback.apply(this, arguments);
+			// Remove the function from the global scope
+			delete window[windowCallbackName];
 		};
 			
 		var ifra = document.createElement('iframe');
-		var queryString = "_cburl=" + encodeURIComponent(callbackURL) + "&";
-		
-		for (var paramName in queryParamsMap)
-		{
-		  queryString += "&" + encodeURIComponent(paramName) + "=" + encodeURIComponent(queryParamsMap[paramName]);
-		  
+		var queryString = "_cburl=" + encodeURIComponent(callbackURL);
+		if(url.indexOf("?") === "-1"){
+			url += "?" + queryString;
+		}else{
+			url += "&" + queryString;
 		}
-		ifra.src=url + "?" + queryString;
+		
+		ifra.src=url;
 		ifra.setAttribute("height","0");
 		ifra.setAttribute("width","0");
 		ifra.setAttribute("hidden", true);
@@ -58,7 +96,6 @@ This is a simple Echo Test
 		void(document.body.appendChild(ifra));
 
 
-		
 	}
 
 	
