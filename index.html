@@ -20,7 +20,7 @@ This is a simple Echo Test
 
 		var url = "https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=Hello";
 		var options = {
-			callbackURL : "http://htmlpreview.github.io/?https://github.com/sudsy/xdmZoho/blob/master/callback.html?response="
+			callbackURL : "http://htmlpreview.github.io/?https://github.com/sudsy/xdmZoho/blob/master/callback.html"
 		}
 		get(url, onXdmResponse, onXdmTimeout, options);
 	}
@@ -39,7 +39,7 @@ This is a simple Echo Test
 	 * @param  {String} url
 	 * @param  {Function} successCallback
 	 * @param  {Function} timeoutCallback
-	 * @param  {String} options.callbackURL is the url containing the callback html. Defaults to /callback.html?response= on the same host it is served from
+	 * @param  {String} options.callbackURL is the url containing the callback html. Defaults to /callback.html on the same host it is served from
 	 * @param  {Integer} options.timeout Defaults to 5000, the amount of time to wait for the callback before firing on("error")
 	 * @return {void}
 	 */
