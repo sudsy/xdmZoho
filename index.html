@@ -22,9 +22,12 @@ This is sending the text from the text area to zoho creator and then being retur
 		var textArea = document.getElementById("echoText");
 		var encodedText = encodeURIComponent(textArea.value);
 		var url = "https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=" + encodedText;
+		
+		//The callback url normally defaults to the same url as this page but needs to be set explicitly for github preview
 		var options = {
 			callbackURL : "http://htmlpreview.github.io/?https://github.com/sudsy/xdmZoho/blob/master/callback.html"
 		}
+
 		get(url, onXdmResponse, onXdmTimeout, options);
 	}
 
