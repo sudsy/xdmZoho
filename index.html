@@ -108,7 +108,7 @@ This is sending the text from the text area to zoho creator and then being retur
 		if(url.indexOf('?') === -1){
 			url += '?' + queryString;
 		}else{
-			url += '?' + queryString;
+			url += '&' + queryString;
 		}
 
 		console.log(url);
