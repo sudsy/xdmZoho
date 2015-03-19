@@ -1,14 +1,20 @@
 <!-- callback.html -->
 <script>
+'use strict';
+
 function getParameterByName(name) {
-    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    var match = new RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
+var message = {
+  'callbackFnName' : getParameterByName('callbackFnName'),
+  'response' : getParameterByName('response')
+};
 
-callbackFnName = getParameterByName("callbackFnName");
-response = getParameterByName("response");
 
-window.parent.parent[callbackFnName](response);
+//TODO Change this to window.location.host if it works
+window.parent.parent.postMessage(message, '*');
+
 
 </script>

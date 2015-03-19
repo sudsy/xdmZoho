@@ -6,39 +6,40 @@
 <BODY>
 This is a simple Echo Test<br/>
 This is sending the text from the text area to zoho creator and then being returned again<br/>
-<TEXTAREA id="echoText">Hello</TEXTAREA><br/>	
-<BUTTON id="echoButton">Echo</BUTTON><br/>
+<TEXTAREA id='echoText'>Hello</TEXTAREA><br/>
+<BUTTON id='echoButton'>Echo</BUTTON><br/>
 
 </BODY>
 
 <SCRIPT>
+	'use strict';
 
-	var echoButton = document.getElementById("echoButton");
-	echoButton.addEventListener("click", onButtonClick);
+	var echoButton = document.getElementById('echoButton');
+	echoButton.addEventListener('click', onButtonClick);
 
 	function onButtonClick(){
-		// alert("onClick");
+		// alert('onClick');
 
-		var textArea = document.getElementById("echoText");
+		var textArea = document.getElementById('echoText');
 		var encodedText = encodeURIComponent(textArea.value);
-		var url = "https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=" + encodedText;
-		
+		var url = 'https://creator.zoho.com/bensudbury/xdmzoho/view-perma/EchoTest?echoString=' + encodedText;
+
 		//The callback url normally defaults to the same url as this page but needs to be set explicitly for github preview
 		var options = {
-			callbackURL : "http://htmlpreview.github.io/?https://github.com/sudsy/xdmZoho/blob/master/callback.html"
-		}
+			callbackURL : 'http://htmlpreview.github.io/?https://github.com/sudsy/xdmZoho/blob/postMessage/callback.html'
+		};
 
 		get(url, onXdmResponse, onXdmTimeout, options);
 	}
 
 	function onXdmTimeout(){
-		alert("Something went wrong");
+		window.alert('Something went wrong');
 	}
 
 	function onXdmResponse(response){
-		alert(response);
+		window.alert(response);
 	}
-	
+
 
 	/**
 	 * This is a hack for making cross domain ajax requests to zoho creator. It uses iframes and code in the zoho creator application to acheiva a similar result to CORS
@@ -46,40 +47,40 @@ This is sending the text from the text area to zoho creator and then being retur
 	 * @param  {Function} successCallback
 	 * @param  {Function} timeoutCallback
 	 * @param  {String} options.callbackURL is the url containing the callback html. Defaults to /callback.html on the same host it is served from
-	 * @param  {Integer} options.timeout Defaults to 5000, the amount of time to wait for the callback before firing on("error")
+	 * @param  {Integer} options.timeout Defaults to 5000, the amount of time to wait for the callback before firing on('error')
 	 * @return {void}
 	 */
 	function get(url, successCallback, timeoutCallback, options){
 		options = options || {};
 
-		var windowCallbackName = "onFrameCallback";
-		
+		var windowCallbackName = 'onFrameCallback';
+
 		var callbackTimeout = options.timeout || 5000;
 		//Set a cancellable timeout
-		
+
 		var timeoutID = setTimeout(function(){
 			// Remove the function from the global scope
 			delete window[windowCallbackName];
 			timeoutCallback();
 		}, callbackTimeout);
-		
+
 		//FInd a suitable name for the successCallback in the global scope
 		var tempCallbackName = windowCallbackName;
-		for (var i = 0; i < 50; i++) { 
+		for (var i = 0; i < 50; i++) {
 			if(window[tempCallbackName]){
-				tempCallbackName = windowCallbackName + "$" + i;
+				tempCallbackName = windowCallbackName + '$' + i;
 			}else{
 				break;
 			}
-		};
+		}
 		windowCallbackName = tempCallbackName;
 
 
 		var origin = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
 
-		var callbackURL = options.callbackURL || origin + "/callback.html"
-		callbackURL += "?callbackFnName=" + windowCallbackName + "&response="
-		
+		var callbackURL = options.callbackURL || origin + '/callback.html';
+		callbackURL += '?callbackFnName=' + windowCallbackName + '&response=';
+
 		// Function needs to be attached to global scope to get called by the iframe
 		window[windowCallbackName] = function(){
 			//Cancel the timeout
@@ -88,25 +89,38 @@ This is sending the text from the text area to zoho creator and then being retur
 			// Remove the function from the global scope
 			delete window[windowCallbackName];
 		};
-			
-		var ifra = document.createElement('iframe');
-		var queryString = "_cburl=" + encodeURIComponent(callbackURL);
-		if(url.indexOf("?") === "-1"){
-			url += "?" + queryString;
-		}else{
-			url += "&" + queryString;
+
+
+
+		function receiveMessage(event)
+		{
+			// if (event.origin !== "http://example.org:8080")
+			// 	return;
+
+			// ...
+			console.log(event);
 		}
-		
+
+		window.addEventListener('message', receiveMessage, false);
+
+		var ifra = document.createElement('iframe');
+		var queryString ='_cburl=' + encodeURIComponent(callbackURL);
+		if(url.indexOf('?') === -1){
+			url += '?' + queryString;
+		}else{
+			url += '?' + queryString;
+		}
+
 		ifra.src=url;
-		ifra.setAttribute("height","0");
-		ifra.setAttribute("width","0");
-		ifra.setAttribute("hidden", true);
-		ifra.setAttribute("tabindex", -1);
+		ifra.setAttribute('height','0');
+		ifra.setAttribute('width','0');
+		ifra.setAttribute('hidden', true);
+		ifra.setAttribute('tabindex', -1);
 		void(document.body.appendChild(ifra));
 
 
 	}
 
-	
+
 </SCRIPT>
 </HTML>
